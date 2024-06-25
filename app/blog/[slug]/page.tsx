@@ -1,9 +1,19 @@
-import { fullBlog } from "@/app/lib/interface";
-import { client, urlFor } from "@/app/lib/sanity";
-import { PortableText } from "@portabletext/react";
-import Image from "next/image";
+import { fullBlog } from '@/app/lib/interface';
+import { client, urlFor } from '@/app/lib/sanity';
+import { PortableText } from '@portabletext/react';
+import { Metadata } from 'next';
+import Image from 'next/image';
 
-export const revalidate = 30; // revalidate at most 30 seconds
+export const revalidate = 30;
+
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const data: fullBlog = await getData(params.slug);
+
+  return {
+    title: data.title,
+    description: data.smallDescription,
+  };
+}
 
 async function getData(slug: string) {
   const query = `
@@ -18,11 +28,7 @@ async function getData(slug: string) {
   return data;
 }
 
-export default async function BlogArticle({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BlogArticle({ params }: { params: { slug: string } }) {
   const data: fullBlog = await getData(params.slug);
 
   return (
